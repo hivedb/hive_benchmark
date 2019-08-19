@@ -13,7 +13,9 @@ class SqfliteStore {
   Future init() async {
     var dir = await getApplicationDocumentsDirectory();
     var dbPath = path.join(dir.path, 'sqlite.db');
-    await File(dbPath).delete();
+    if (await File(dbPath).exists()) {
+      await File(dbPath).delete();
+    }
     db = await openDatabase(
       dbPath,
       onCreate: (db, version) async {
