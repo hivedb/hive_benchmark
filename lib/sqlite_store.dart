@@ -9,7 +9,6 @@ class SqfliteStore {
   static const String TABLE_NAME_INT = "kv_int";
   Database db;
 
-  @override
   Future init() async {
     var dir = await getApplicationDocumentsDirectory();
     var dbPath = path.join(dir.path, 'sqlite.db');
@@ -30,7 +29,6 @@ class SqfliteStore {
     );
   }
 
-  @override
   Future<int> getInt(String key) async {
     var result = await db.query(
       TABLE_NAME_INT,
@@ -40,7 +38,6 @@ class SqfliteStore {
     return result[0]['value'] as int;
   }
 
-  @override
   Future putInt(String key, int value) {
     return db.insert(
       TABLE_NAME_INT,
@@ -49,7 +46,6 @@ class SqfliteStore {
     );
   }
 
-  @override
   Future deleteInt(String key) {
     return db.delete(
       TABLE_NAME_INT,
@@ -58,7 +54,6 @@ class SqfliteStore {
     );
   }
 
-  @override
   Future<String> getString(String key) async {
     var result = await db.query(
       TABLE_NAME_STR,
@@ -68,7 +63,6 @@ class SqfliteStore {
     return result[0]['value'] as String;
   }
 
-  @override
   Future putString(String key, String value) {
     return db.insert(
       TABLE_NAME_STR,
@@ -77,7 +71,6 @@ class SqfliteStore {
     );
   }
 
-  @override
   Future deleteString(String key) {
     return db.delete(
       TABLE_NAME_STR,
@@ -86,7 +79,6 @@ class SqfliteStore {
     );
   }
 
-  @override
   Future close() {
     return db.close();
   }

@@ -16,7 +16,7 @@ dependencies:
   sqflite: ^1.1.6
   shared_preferences: ^0.5.3+4
   fl_chart: ^0.1.6
-
+  moor_ffi: ^0.0.1
 
 flutter:
   uses-material-design: true
