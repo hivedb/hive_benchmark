@@ -1,5 +1,3 @@
-import 'dart:collection';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
@@ -178,11 +176,7 @@ class BenchmarkResult extends StatelessWidget {
   BenchmarkResult(this.results);
 
   List<String> get labels {
-    if (results.length == 3) {
-      return ['Hive', 'SQLite', 'S.Prefs'];
-    } else {
-      return ['Hive', 'Lazy Hive', 'SQLite', 'S.Prefs'];
-    }
+    return results.map((r) => r.runner.name).toList();
   }
 
   int get maxResultTime {
