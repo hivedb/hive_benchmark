@@ -51,7 +51,7 @@ class HiveRunner implements BenchmarkRunner {
 
   @override
   Future<int> batchWriteString(Map<String, dynamic> entries) async {
-    var box = await Hive.openBox('box', lazy: true);
+    var box = await Hive.openBox('box', lazy: lazy);
     var s = Stopwatch()..start();
     for (var key in entries.keys) {
       await box.put(key, entries[key]);
@@ -68,7 +68,7 @@ class HiveRunner implements BenchmarkRunner {
 
   @override
   Future<int> batchDeleteInt(List<String> keys) async {
-    var box = await Hive.openBox('box', lazy: true);
+    var box = await Hive.openBox('box', lazy: lazy);
     var s = Stopwatch()..start();
     for (var key in keys) {
       await box.delete(key);

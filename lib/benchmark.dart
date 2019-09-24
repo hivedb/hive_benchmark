@@ -21,8 +21,8 @@ class Result {
 final runners = [
   HiveRunner(false),
   HiveRunner(true),
-//  SqfliteRunner(),
-//  SharedPreferencesRunner(),
+  SqfliteRunner(),
+  SharedPreferencesRunner(),
   MoorFfiRunner(),
 ];
 
