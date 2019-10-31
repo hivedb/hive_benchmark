@@ -5,7 +5,7 @@ class SharedPreferencesRunner implements BenchmarkRunner {
   SharedPreferences prefs;
 
   @override
-  String get name => 'Shared Preferences';
+  String get name => 'S.Prefs';
 
   @override
   Future<void> setUp() async {
@@ -42,8 +42,8 @@ class SharedPreferencesRunner implements BenchmarkRunner {
 
   @override
   Future<int> batchWriteInt(Map<String, int> entries) async {
-    var s = Stopwatch()..start();
     var prefs = await SharedPreferences.getInstance();
+    var s = Stopwatch()..start();
     for (var key in entries.keys) {
       await prefs.setInt(key, entries[key]);
     }
@@ -53,8 +53,8 @@ class SharedPreferencesRunner implements BenchmarkRunner {
 
   @override
   Future<int> batchWriteString(Map<String, String> entries) async {
-    var s = Stopwatch()..start();
     var prefs = await SharedPreferences.getInstance();
+    var s = Stopwatch()..start();
     for (var key in entries.keys) {
       await prefs.setString(key, entries[key]);
     }
@@ -64,8 +64,8 @@ class SharedPreferencesRunner implements BenchmarkRunner {
 
   @override
   Future<int> batchDeleteInt(List<String> keys) async {
-    var s = Stopwatch()..start();
     var prefs = await SharedPreferences.getInstance();
+    var s = Stopwatch()..start();
     for (var key in keys) {
       await prefs.remove(key);
     }

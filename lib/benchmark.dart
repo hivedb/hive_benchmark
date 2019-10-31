@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:hive_benchmark/runners/hive.dart';
 import 'package:hive_benchmark/runners/moor_ffi.dart';
 import 'package:hive_benchmark/runners/runner.dart';
+import 'package:hive_benchmark/runners/sembast.dart';
 import 'package:hive_benchmark/runners/shared_preferences.dart';
 import 'package:hive_benchmark/runners/sqflite.dart';
 import 'package:random_string/random_string.dart' as randStr;
@@ -24,6 +25,7 @@ final runners = [
   SqfliteRunner(),
   SharedPreferencesRunner(),
   MoorFfiRunner(),
+  SembastRunner(),
 ];
 
 List<Result> _createResults() {
