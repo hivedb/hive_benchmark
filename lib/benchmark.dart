@@ -35,7 +35,7 @@ Map<String, int> generateIntEntries(int count) {
   var random = Random();
   for (var i = 0; i < count; i++) {
     var key = randStr.randomAlphaNumeric(randStr.randomBetween(5, 200));
-    var val = random.nextInt((1 << 25)*(1 << 25));
+    var val = random.nextInt(1 << 32);
     map[key] = val;
   }
   return map;
