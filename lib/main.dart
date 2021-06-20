@@ -137,12 +137,21 @@ class _BenchmarkWidgetState extends State<BenchmarkWidget> {
             ),
           ],
         ),
-        Center(
-          child: ElevatedButton(
-            onPressed: !benchmarkRunning ? _performBenchmark : null,
-            child: Text("Benchmark"),
+        if (benchmarkRunning)
+          const Center(
+            child: SizedBox(
+              width: 28,
+              height: 28,
+              child: CircularProgressIndicator(strokeWidth: 3),
+            ),
+          )
+        else
+          Center(
+            child: ElevatedButton(
+              onPressed: _performBenchmark,
+              child: Text("Benchmark"),
+            ),
           ),
-        ),
         SizedBox(height: 20),
       ],
     );
