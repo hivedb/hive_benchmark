@@ -3,8 +3,16 @@ import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_benchmark/benchmark.dart';
+import 'package:logging/logging.dart';
 
-void main() => runApp(App());
+void main() {
+  Logger.root.level = Level.ALL; // defaults to Level.INFO
+  Logger.root.onRecord.listen((record) {
+    print('${record.level.name}: ${record.time}: ${record.message}');
+  });
+
+  runApp(App());
+}
 
 class App extends StatefulWidget {
   @override
@@ -12,7 +20,7 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> with SingleTickerProviderStateMixin {
-  TabController controller;
+  late TabController controller;
 
   @override
   void initState() {
@@ -81,7 +89,7 @@ class _BenchmarkWidgetState extends State<BenchmarkWidget> {
   int get entries => entrySteps[entryValue.round()];
 
   var benchmarkRunning = false;
-  List<Result> benchmarkResults;
+  List<Result>? benchmarkResults;
 
   @override
   void didChangeDependencies() {
@@ -104,7 +112,7 @@ class _BenchmarkWidgetState extends State<BenchmarkWidget> {
         else
           Expanded(
             child: Center(
-              child: BenchmarkResult(benchmarkResults),
+              child: BenchmarkResult(benchmarkResults!),
             ),
           ),
         SizedBox(height: 20),
@@ -129,12 +137,21 @@ class _BenchmarkWidgetState extends State<BenchmarkWidget> {
             ),
           ],
         ),
-        Center(
-          child: RaisedButton(
-            onPressed: !benchmarkRunning ? _performBenchmark : null,
-            child: Text("Benchmark"),
+        if (benchmarkRunning)
+          const Center(
+            child: SizedBox(
+              width: 28,
+              height: 28,
+              child: CircularProgressIndicator(strokeWidth: 3),
+            ),
+          )
+        else
+          Center(
+            child: ElevatedButton(
+              onPressed: _performBenchmark,
+              child: Text("Benchmark"),
+            ),
           ),
-        ),
         SizedBox(height: 20),
       ],
     );
@@ -194,26 +211,27 @@ class BenchmarkResult extends StatelessWidget {
 
   List<BarChartGroupData> get barGroups {
     var x = 0;
-    return results.map((result) {
-      return BarChartGroupData(
-        barsSpace: 4,
-        x: x++,
-        barRods: [
-          BarChartRodData(
-            y: max(result.intTime.toDouble(), 1),
-            color: leftBarColor,
-            width: width,
-            isRound: true,
-          ),
-          BarChartRodData(
-            y: max(result.stringTime.toDouble(), 1),
-            color: rightBarColor,
-            width: width,
-            isRound: true,
-          ),
-        ],
-      );
-    }).toList();
+    return [
+      for (final result in results)
+        BarChartGroupData(
+          barsSpace: 4,
+          x: x++,
+          barRods: [
+            BarChartRodData(
+              y: max(result.intTime.toDouble(), 1),
+              colors: [leftBarColor],
+              width: width,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            BarChartRodData(
+              y: max(result.stringTime.toDouble(), 1),
+              colors: [rightBarColor],
+              width: width,
+              borderRadius: BorderRadius.circular(6),
+            ),
+          ],
+        ),
+    ];
   }
 
   @override
@@ -273,57 +291,45 @@ class BenchmarkResult extends StatelessWidget {
   _buildChart() {
     var maxTime = maxResultTime;
     return Container(
-      child: FlChart(
-        chart: BarChart(
-          BarChartData(
-            barTouchData: BarTouchData(
-              touchTooltipData: TouchTooltipData(
-                tooltipBgColor: Colors.grey,
-                getTooltipItems: (spots) {
-                  return spots.map((TouchedSpot spot) {
-                    return null;
-                  }).toList();
-                },
+      child: BarChart(
+        BarChartData(
+          maxY: maxTime.toDouble(),
+          alignment: BarChartAlignment.spaceAround,
+          titlesData: FlTitlesData(
+            show: true,
+            bottomTitles: SideTitles(
+              showTitles: true,
+              getTextStyles: (_) => TextStyle(
+                color: const Color(0xff7589a2),
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
               ),
+              margin: 20,
+              getTitles: (double value) {
+                return labels[value.toInt()];
+              },
             ),
-            maxY: maxTime.toDouble(),
-            alignment: BarChartAlignment.spaceAround,
-            titlesData: FlTitlesData(
-              show: true,
-              bottomTitles: SideTitles(
-                showTitles: true,
-                textStyle: TextStyle(
-                  color: const Color(0xff7589a2),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-                margin: 20,
-                getTitles: (double value) {
-                  return labels[value.toInt()];
-                },
+            leftTitles: SideTitles(
+              showTitles: true,
+              getTextStyles: (_) => TextStyle(
+                color: const Color(0xff7589a2),
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
               ),
-              leftTitles: SideTitles(
-                showTitles: true,
-                textStyle: TextStyle(
-                  color: const Color(0xff7589a2),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-                margin: 32,
-                reservedSize: 50,
-                getTitles: (value) {
-                  if (value % (maxResultTime ~/ 4) == 0) {
-                    return value.toInt().toString() + 'ms';
-                  }
-                  return '';
-                },
-              ),
+              margin: 32,
+              reservedSize: 50,
+              getTitles: (value) {
+                if (value % (maxResultTime ~/ 4) == 0) {
+                  return value.toInt().toString() + 'ms';
+                }
+                return '';
+              },
             ),
-            borderData: FlBorderData(
-              show: false,
-            ),
-            barGroups: barGroups,
           ),
+          borderData: FlBorderData(
+            show: false,
+          ),
+          barGroups: barGroups,
         ),
       ),
     );

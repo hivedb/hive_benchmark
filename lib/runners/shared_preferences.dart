@@ -2,7 +2,7 @@ import 'package:hive_benchmark/runners/runner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesRunner implements BenchmarkRunner {
-  SharedPreferences prefs;
+  late SharedPreferences prefs;
 
   @override
   String get name => 'Shared Preferences';
@@ -45,7 +45,7 @@ class SharedPreferencesRunner implements BenchmarkRunner {
     var s = Stopwatch()..start();
     var prefs = await SharedPreferences.getInstance();
     for (var key in entries.keys) {
-      await prefs.setInt(key, entries[key]);
+      await prefs.setInt(key, entries[key]!);
     }
     s.stop();
     return s.elapsedMilliseconds;
@@ -56,7 +56,7 @@ class SharedPreferencesRunner implements BenchmarkRunner {
     var s = Stopwatch()..start();
     var prefs = await SharedPreferences.getInstance();
     for (var key in entries.keys) {
-      await prefs.setString(key, entries[key]);
+      await prefs.setString(key, entries[key]!);
     }
     s.stop();
     return s.elapsedMilliseconds;

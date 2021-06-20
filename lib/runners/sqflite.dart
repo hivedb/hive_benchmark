@@ -3,7 +3,7 @@ import 'package:hive_benchmark/runners/runner.dart';
 import '../sqlite_store.dart';
 
 class SqfliteRunner implements BenchmarkRunner {
-  SqfliteStore store;
+  late SqfliteStore store;
 
   @override
   String get name => 'sqflite';
@@ -43,7 +43,7 @@ class SqfliteRunner implements BenchmarkRunner {
   Future<int> batchWriteInt(Map<String, int> entries) async {
     var s = Stopwatch()..start();
     for (var key in entries.keys) {
-      await store.putInt(key, entries[key]);
+      await store.putInt(key, entries[key]!);
     }
     s.stop();
     return s.elapsedMilliseconds;
@@ -53,7 +53,7 @@ class SqfliteRunner implements BenchmarkRunner {
   Future<int> batchWriteString(Map<String, String> entries) async {
     var s = Stopwatch()..start();
     for (var key in entries.keys) {
-      await store.putString(key, entries[key]);
+      await store.putString(key, entries[key]!);
     }
     s.stop();
     return s.elapsedMilliseconds;

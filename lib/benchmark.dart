@@ -1,10 +1,12 @@
 import 'dart:math';
 
 import 'package:hive_benchmark/runners/hive.dart';
-import 'package:hive_benchmark/runners/moor_ffi.dart';
+import 'package:hive_benchmark/runners/sembast.dart';
+import 'package:hive_benchmark/runners/sql_ffi.dart';
 import 'package:hive_benchmark/runners/runner.dart';
 import 'package:hive_benchmark/runners/shared_preferences.dart';
 import 'package:hive_benchmark/runners/sqflite.dart';
+import 'package:logging/logging.dart';
 import 'package:random_string/random_string.dart' as randStr;
 
 const String TABLE_NAME_STR = "kv_str";
@@ -12,8 +14,8 @@ const String TABLE_NAME_INT = "kv_int";
 
 class Result {
   final BenchmarkRunner runner;
-  int intTime;
-  int stringTime;
+  int intTime = 0;
+  int stringTime = 0;
 
   Result(this.runner);
 }
@@ -23,7 +25,8 @@ final runners = [
   HiveRunner(true),
   SqfliteRunner(),
   SharedPreferencesRunner(),
-  MoorFfiRunner(),
+  SqlFfiRunner(),
+  SembasRunner(),
 ];
 
 List<Result> _createResults() {
@@ -51,13 +54,18 @@ Map<String, String> generateStringEntries(int count) {
   return map;
 }
 
+Logger _logger = Logger('Benchmark');
+
 Future<List<Result>> benchmarkRead(int count) async {
+  _logger.fine('Benchmarking read($count)');
+
   var results = _createResults();
 
   var intEntries = generateIntEntries(count);
   var intKeys = intEntries.keys.toList()..shuffle();
 
   for (var result in results) {
+    _logger.info('Running ${result.runner.name}...');
     await result.runner.setUp();
     await result.runner.batchWriteInt(intEntries);
     result.intTime = await result.runner.batchReadInt(intKeys);
@@ -67,6 +75,7 @@ Future<List<Result>> benchmarkRead(int count) async {
   var stringKeys = stringEntries.keys.toList()..shuffle();
 
   for (var result in results) {
+    _logger.info('Running ${result.runner.name}...');
     await result.runner.batchWriteString(stringEntries);
     result.stringTime = await result.runner.batchReadString(stringKeys);
   }
@@ -79,11 +88,14 @@ Future<List<Result>> benchmarkRead(int count) async {
 }
 
 Future<List<Result>> benchmarkWrite(int count) async {
+  _logger.fine('Benchmarking write($count)');
+
   final results = _createResults();
   var intEntries = generateIntEntries(count);
   var stringEntries = generateStringEntries(count);
 
   for (var result in results) {
+    _logger.info('Running ${result.runner.name}...');
     await result.runner.setUp();
     result.intTime = await result.runner.batchWriteInt(intEntries);
     result.stringTime = await result.runner.batchWriteString(stringEntries);
@@ -95,11 +107,14 @@ Future<List<Result>> benchmarkWrite(int count) async {
 }
 
 Future<List<Result>> benchmarkDelete(int count) async {
+  _logger.fine('Benchmarking delete($count)');
+
   final results = _createResults();
 
   var intEntries = generateIntEntries(count);
   var intKeys = intEntries.keys.toList()..shuffle();
   for (var result in results) {
+    _logger.info('Running ${result.runner.name}...');
     await result.runner.setUp();
     await result.runner.batchWriteInt(intEntries);
     result.intTime = await result.runner.batchDeleteInt(intKeys);
@@ -108,6 +123,7 @@ Future<List<Result>> benchmarkDelete(int count) async {
   var stringEntries = generateStringEntries(count);
   var stringKeys = stringEntries.keys.toList()..shuffle();
   for (var result in results) {
+    _logger.info('Running ${result.runner.name}...');
     await result.runner.batchWriteString(stringEntries);
     result.stringTime = await result.runner.batchDeleteString(stringKeys);
   }
