@@ -35,15 +35,24 @@ class HiveRunner implements BenchmarkRunner {
   @override
   Future<int> batchReadInt(List<String> keys) async {
     final box = await Hive.openBox2('box', lazy: lazy);
-    final s = Stopwatch()..start();
-    for (var key in keys) {
-      if (box.lazy) {
+
+    if (box.lazy) {
+      final s = Stopwatch()..start();
+      for (var key in keys) {
         await (box as LazyBox).get(key);
       }
+      s.stop();
+      await box.close();
+      return s.elapsedMilliseconds;
+    } else {
+      final s = Stopwatch()..start();
+      for (var key in keys) {
+        (box as Box).get(key);
+      }
+      s.stop();
+      await box.close();
+      return s.elapsedMilliseconds;
     }
-    s.stop();
-    await box.close();
-    return s.elapsedMilliseconds;
   }
 
   @override
