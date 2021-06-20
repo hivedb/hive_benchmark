@@ -3,8 +3,16 @@ import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_benchmark/benchmark.dart';
+import 'package:logging/logging.dart';
 
-void main() => runApp(App());
+void main() {
+  Logger.root.level = Level.ALL; // defaults to Level.INFO
+  Logger.root.onRecord.listen((record) {
+    print('${record.level.name}: ${record.time}: ${record.message}');
+  });
+
+  runApp(App());
+}
 
 class App extends StatefulWidget {
   @override
@@ -130,7 +138,7 @@ class _BenchmarkWidgetState extends State<BenchmarkWidget> {
           ],
         ),
         Center(
-          child: RaisedButton(
+          child: ElevatedButton(
             onPressed: !benchmarkRunning ? _performBenchmark : null,
             child: Text("Benchmark"),
           ),
@@ -194,26 +202,27 @@ class BenchmarkResult extends StatelessWidget {
 
   List<BarChartGroupData> get barGroups {
     var x = 0;
-    return results.map((result) {
-      return BarChartGroupData(
-        barsSpace: 4,
-        x: x++,
-        barRods: [
-          BarChartRodData(
-            y: max(result.intTime.toDouble(), 1),
-            colors: [leftBarColor],
-            width: width,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          BarChartRodData(
-            y: max(result.stringTime.toDouble(), 1),
-            colors: [rightBarColor],
-            width: width,
-            borderRadius: BorderRadius.circular(6),
-          ),
-        ],
-      );
-    }).toList();
+    return [
+      for (final result in results)
+        BarChartGroupData(
+          barsSpace: 4,
+          x: x++,
+          barRods: [
+            BarChartRodData(
+              y: max(result.intTime.toDouble(), 1),
+              colors: [leftBarColor],
+              width: width,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            BarChartRodData(
+              y: max(result.stringTime.toDouble(), 1),
+              colors: [rightBarColor],
+              width: width,
+              borderRadius: BorderRadius.circular(6),
+            ),
+          ],
+        ),
+    ];
   }
 
   @override

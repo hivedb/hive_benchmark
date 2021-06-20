@@ -18,6 +18,8 @@ dependencies:
   fl_chart: ^0.36.2
   sqlite3: ^1.1.2
   sqlite3_flutter_libs: ^0.5.0
+  sembast: ^3.1.0+2
+  logging: ^1.0.1
 
 flutter:
   uses-material-design: true
