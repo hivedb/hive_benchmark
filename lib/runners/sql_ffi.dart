@@ -7,7 +7,7 @@ import 'package:sqlite3/sqlite3.dart';
 
 import '../benchmark.dart';
 
-class MoorFfiRunner implements BenchmarkRunner {
+class SqlFfiRunner implements BenchmarkRunner {
   @override
   String get name => 'SQL (ffi)';
 

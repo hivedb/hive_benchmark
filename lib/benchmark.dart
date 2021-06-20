@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:hive_benchmark/runners/hive.dart';
-import 'package:hive_benchmark/runners/moor_ffi.dart';
+import 'package:hive_benchmark/runners/sql_ffi.dart';
 import 'package:hive_benchmark/runners/runner.dart';
 import 'package:hive_benchmark/runners/shared_preferences.dart';
 import 'package:hive_benchmark/runners/sqflite.dart';
@@ -23,7 +23,7 @@ final runners = [
   HiveRunner(true),
   SqfliteRunner(),
   SharedPreferencesRunner(),
-  MoorFfiRunner(),
+  SqlFfiRunner(),
 ];
 
 List<Result> _createResults() {
