@@ -7,7 +7,7 @@ import 'package:path/path.dart' as path;
 class SqfliteStore {
   static const String TABLE_NAME_STR = "kv_str";
   static const String TABLE_NAME_INT = "kv_int";
-  Database db;
+  late Database db;
 
   Future init() async {
     var dir = await getApplicationDocumentsDirectory();

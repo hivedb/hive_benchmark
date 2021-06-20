@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:hive_benchmark/runners/runner.dart';
-import 'package:moor_ffi/database.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
+import 'package:sqlite3/sqlite3.dart';
 
 import '../benchmark.dart';
 
@@ -11,7 +11,7 @@ class MoorFfiRunner implements BenchmarkRunner {
   @override
   String get name => 'SQL (ffi)';
 
-  Database db;
+  late Database db;
 
   @override
   Future<void> setUp() async {
@@ -23,7 +23,7 @@ class MoorFfiRunner implements BenchmarkRunner {
       await file.delete();
     }
 
-    db = Database.openFile(file);
+    db = sqlite3.open(file.path);
 
     db.execute(
         'CREATE TABLE $TABLE_NAME_STR (key TEXT PRIMARY KEY, value TEXT)');
@@ -33,7 +33,7 @@ class MoorFfiRunner implements BenchmarkRunner {
 
   @override
   Future<void> tearDown() async {
-    db.close();
+    db.dispose();
   }
 
   Future<int> _batchRead(String table, List<String> keys) async {
@@ -47,7 +47,7 @@ class MoorFfiRunner implements BenchmarkRunner {
     }
 
     s.stop();
-    stmt.close();
+    stmt.dispose();
     return s.elapsedMilliseconds;
   }
 
@@ -71,7 +71,7 @@ class MoorFfiRunner implements BenchmarkRunner {
       stmt.execute([key, value]);
     });
 
-    stmt.close();
+    stmt.dispose();
     s.stop();
     return s.elapsedMilliseconds;
   }
@@ -86,7 +86,7 @@ class MoorFfiRunner implements BenchmarkRunner {
       stmt.execute([key, value]);
     });
 
-    stmt.close();
+    stmt.dispose();
     s.stop();
     return s.elapsedMilliseconds;
   }
@@ -99,7 +99,7 @@ class MoorFfiRunner implements BenchmarkRunner {
       stmt.execute([key]);
     }
 
-    stmt.close();
+    stmt.dispose();
     s.stop();
     return s.elapsedMilliseconds;
   }

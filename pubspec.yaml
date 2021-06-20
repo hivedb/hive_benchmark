@@ -3,20 +3,21 @@ name: hive_benchmark
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.2.2 <3.0.0"
+  sdk: ">=2.12.2 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  path_provider: ^1.1.0
-  path: ^1.6.4
-  random_string: ^1.1.0
-  hive: ^0.4.0
-  sqflite: ^1.1.6
-  shared_preferences: ^0.5.3+4
-  fl_chart: ^0.1.6
-  moor_ffi: ^0.0.1
+  path_provider: ^2.0.2
+  path: ^1.8.0
+  random_string: ^2.1.0
+  hive: ^2.0.4
+  sqflite: ^2.0.0+3
+  shared_preferences: ^2.0.6
+  fl_chart: ^0.36.2
+  sqlite3: ^1.1.2
+  sqlite3_flutter_libs: ^0.5.0
 
 flutter:
   uses-material-design: true

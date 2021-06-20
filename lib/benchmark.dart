@@ -12,8 +12,8 @@ const String TABLE_NAME_INT = "kv_int";
 
 class Result {
   final BenchmarkRunner runner;
-  int intTime;
-  int stringTime;
+  int intTime = 0;
+  int stringTime = 0;
 
   Result(this.runner);
 }
