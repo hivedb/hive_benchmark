@@ -19,6 +19,7 @@ dependencies:
   sqlite3: ^1.1.2
   sqlite3_flutter_libs: ^0.5.0
   sembast: ^3.1.0+2
+  mmkv: ^1.2.15
   logging: ^1.0.1
 
 flutter:
