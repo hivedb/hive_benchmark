@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:hive_benchmark/runners/hive.dart';
 import 'package:hive_benchmark/runners/sembast.dart';
 import 'package:hive_benchmark/runners/sql_ffi.dart';
+import 'package:hive_benchmark/runners/mmkv.dart';
 import 'package:hive_benchmark/runners/runner.dart';
 import 'package:hive_benchmark/runners/shared_preferences.dart';
 import 'package:hive_benchmark/runners/sqflite.dart';
@@ -27,6 +28,7 @@ final runners = [
   SharedPreferencesRunner(),
   SqlFfiRunner(),
   SembasRunner(),
+  MMKVRunner(),
 ];
 
 List<Result> _createResults() {

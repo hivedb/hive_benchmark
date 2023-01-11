@@ -83,6 +83,7 @@ class BenchmarkWidget extends StatefulWidget {
 }
 
 class _BenchmarkWidgetState extends State<BenchmarkWidget> {
+  bool isPrecise = false;
   static const entrySteps = [10, 20, 50, 100, 200, 500, 1000];
 
   var entryValue = 0.0;
@@ -112,7 +113,7 @@ class _BenchmarkWidgetState extends State<BenchmarkWidget> {
         else
           Expanded(
             child: Center(
-              child: BenchmarkResult(benchmarkResults!),
+              child: BenchmarkResult(benchmarkResults!, isPrecise),
             ),
           ),
         SizedBox(height: 20),
@@ -146,11 +147,26 @@ class _BenchmarkWidgetState extends State<BenchmarkWidget> {
             ),
           )
         else
-          Center(
-            child: ElevatedButton(
-              onPressed: _performBenchmark,
-              child: Text("Benchmark"),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: _performBenchmark,
+                  child: Text("Benchmark"),
+                ),
+              ),
+              Expanded(
+                child: CheckboxListTile(
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: Text('Precise'),
+                  value: isPrecise,
+                  onChanged: (bool? value) {
+                    isPrecise = !isPrecise;
+                    setState(() {});
+                  },
+                ),
+              )
+            ],
           ),
         SizedBox(height: 20),
       ],
@@ -189,8 +205,9 @@ class BenchmarkResult extends StatelessWidget {
   final double width = 12;
 
   final List<Result> results;
+  final bool isPrecise;
 
-  BenchmarkResult(this.results);
+  BenchmarkResult(this.results, this.isPrecise);
 
   List<String> get labels {
     return results.map((r) => r.runner.name).toList();
@@ -209,22 +226,33 @@ class BenchmarkResult extends StatelessWidget {
     return max;
   }
 
+  double get preciseTime {
+    final List<Result> index = List.from(results);
+    index.sort((a, b) => a.intTime.compareTo(b.intTime));
+    final preciseIntTime = index[2].intTime;
+
+    index.sort((a, b) => a.stringTime.compareTo(b.stringTime));
+    final preciseStringTime = index[2].stringTime;
+
+    return max(max<int>(preciseIntTime, preciseStringTime) + 1, 5) * 1.10;
+  }
+
   List<BarChartGroupData> get barGroups {
     var x = 0;
     return [
       for (final result in results)
         BarChartGroupData(
-          barsSpace: 4,
+          barsSpace: 2,
           x: x++,
           barRods: [
             BarChartRodData(
-              y: max(result.intTime.toDouble(), 1),
+              y: max(result.intTime.toDouble(), 0.1),
               colors: [leftBarColor],
               width: width,
               borderRadius: BorderRadius.circular(6),
             ),
             BarChartRodData(
-              y: max(result.stringTime.toDouble(), 1),
+              y: max(result.stringTime.toDouble(), 0.1),
               colors: [rightBarColor],
               width: width,
               borderRadius: BorderRadius.circular(6),
@@ -289,47 +317,62 @@ class BenchmarkResult extends StatelessWidget {
   }
 
   _buildChart() {
-    var maxTime = maxResultTime;
+    final maxTime = maxResultTime;
+
     return Container(
-      child: BarChart(
-        BarChartData(
-          maxY: maxTime.toDouble(),
-          alignment: BarChartAlignment.spaceAround,
-          titlesData: FlTitlesData(
-            show: true,
-            bottomTitles: SideTitles(
-              showTitles: true,
-              getTextStyles: (_) => TextStyle(
-                color: const Color(0xff7589a2),
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
+      child: ClipRect(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: BarChart(
+            BarChartData(
+              maxY: isPrecise ? preciseTime : maxTime.toDouble(),
+              alignment: BarChartAlignment.spaceAround,
+              titlesData: FlTitlesData(
+                show: true,
+                bottomTitles: SideTitles(
+                  showTitles: true,
+                  getTextStyles: (_, value) => TextStyle(
+                    color: const Color(0xff7589a2),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                  margin: 10,
+                  reservedSize: 140,
+                  rotateAngle: -90,
+                  getTitles: (double value) {
+                    return labels[value.toInt()];
+                  },
+                ),
+                leftTitles: SideTitles(
+                  showTitles: true,
+                  getTextStyles: (_, value) => TextStyle(
+                    color: const Color(0xff7589a2),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                  margin: 32,
+                  checkToShowTitle: (double minValue,
+                      double maxValue,
+                      SideTitles sideTitles,
+                      double appliedInterval,
+                      double value) {
+                    var interval = ((maxValue / 10) / appliedInterval).floor() *
+                        appliedInterval;
+                    if (interval == 0) interval = appliedInterval;
+                    return (value % interval == 0);
+                  },
+                  reservedSize: 65,
+                  getTitles: (value) {
+                    return '${value.toInt().toString()} ms';
+                  },
+                ),
               ),
-              margin: 20,
-              getTitles: (double value) {
-                return labels[value.toInt()];
-              },
-            ),
-            leftTitles: SideTitles(
-              showTitles: true,
-              getTextStyles: (_) => TextStyle(
-                color: const Color(0xff7589a2),
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
+              borderData: FlBorderData(
+                show: false,
               ),
-              margin: 32,
-              reservedSize: 50,
-              getTitles: (value) {
-                if (value % (maxResultTime ~/ 4) == 0) {
-                  return value.toInt().toString() + 'ms';
-                }
-                return '';
-              },
+              barGroups: barGroups,
             ),
           ),
-          borderData: FlBorderData(
-            show: false,
-          ),
-          barGroups: barGroups,
         ),
       ),
     );
