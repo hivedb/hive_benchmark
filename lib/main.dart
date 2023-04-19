@@ -299,7 +299,7 @@ class BenchmarkResult extends StatelessWidget {
             show: true,
             bottomTitles: SideTitles(
               showTitles: true,
-              getTextStyles: (_) => TextStyle(
+              getTextStyles: ( _, __) => TextStyle(
                 color: const Color(0xff7589a2),
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
@@ -311,7 +311,7 @@ class BenchmarkResult extends StatelessWidget {
             ),
             leftTitles: SideTitles(
               showTitles: true,
-              getTextStyles: (_) => TextStyle(
+              getTextStyles: (_,__) => TextStyle(
                 color: const Color(0xff7589a2),
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
